@@ -7,58 +7,68 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  overflow: hidden;
+  width: 100%;
 }
 
-/* INTRO SCREEN */
-#intro-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
+/* INTRO SECTION */
+#intro-section {
+  width: 100%;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #000;
-  transition: opacity 1s ease;
-}
-
-#intro-screen.hide {
-  opacity: 0;
-  pointer-events: none;
+  position: relative;
 }
 
 #intro-gif {
-  max-width: 100%;
-  max-height: 100vh;
-  object-fit: contain;
+  width: 70%;
+  height: 60%;
+  object-fit: cover;
 }
 
-/* CARD SCREEN */
-#card-screen {
-  opacity: 0;
-  transition: opacity 1s ease;
+/* Scroll down hint */
+.scroll-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #f9a8d4;
+  font-family: sans-serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* CARD SECTION */
+#card-section {
   width: 100%;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
   background: linear-gradient(135deg, #fce4ec, #f3e5f5, #e8f5e9);
-  padding: 16px;
-}
-
-#card-screen.show {
-  opacity: 1;
+  padding: 32px 16px;
 }
 
 .scene {
-  width: 100%;
-  max-width: 600px;
+  width: 70vw;
+  max-width: 700px;
+  min-width: 280px;
   perspective: 1200px;
 }
 
@@ -69,8 +79,8 @@ body {
   transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  border-radius: 28px;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
 }
 
 .card.flipped {
@@ -81,15 +91,15 @@ body {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
-  border-radius: 28px;
+  border-radius: 20px;
   overflow: hidden;
 }
 
 .card-face img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 28px;
+  object-fit: fill;
+  display: block;
 }
 
 .card-back {
@@ -98,11 +108,11 @@ body {
 
 .tap-hint {
   text-align: center;
-  margin-top: 16px;
+  margin-top: 20px;
   font-family: sans-serif;
   font-size: 11px;
-  letter-spacing: 2px;
-  color: #f9a8d4;
+  letter-spacing: 3px;
+  color: #be185d;
   opacity: 0.8;
   text-transform: uppercase;
 }
@@ -110,54 +120,31 @@ body {
 </head>
 <body>
 
-<!-- INTRO SCREEN -->
-<div id="intro-screen">
+<!-- INTRO SECTION -->
+<section id="intro-section">
   <img id="intro-gif" src="intro.gif" alt="Sculpted Veil Intro">
-</div>
+  <p class="scroll-hint">✨ scroll down ✨</p>
+</section>
 
-<!-- CARD SCREEN -->
-<div id="card-screen">
-  <div>
-    <div class="scene">
-      <div class="card" id="business-card"
-           onclick="this.classList.toggle('flipped')"
-           tabindex="0" role="button"
-           aria-label="Digital business card - tap to flip">
-        <div class="card-face card-front">
-          <img src="1.jpg" alt="Sculpted Veil Front">
-        </div>
-        <div class="card-face card-back">
-          <img src="2.jpg" alt="Sculpted Veil Back">
-        </div>
+<!-- CARD SECTION -->
+<section id="card-section">
+  <div class="scene">
+    <div class="card" id="business-card"
+         onclick="this.classList.toggle('flipped')"
+         tabindex="0" role="button"
+         aria-label="Digital business card - tap to flip">
+      <div class="card-face card-front">
+        <img src="1.jpg" alt="Sculpted Veil Front">
+      </div>
+      <div class="card-face card-back">
+        <img src="2.jpg" alt="Sculpted Veil Back">
       </div>
     </div>
-    <p class="tap-hint">✨ tap card to flip ✨</p>
   </div>
-</div>
+  <p class="tap-hint">✨ tap card to flip ✨</p>
+</section>
 
 <script>
-  const gif = document.getElementById('intro-gif');
-  const introScreen = document.getElementById('intro-screen');
-  const cardScreen = document.getElementById('card-screen');
-
-  // Wait for GIF to load then time the transition
-  gif.onload = function() {
-    // Most intro GIFs are 2-5 seconds — adjust this number to match yours
-    setTimeout(function() {
-      introScreen.classList.add('hide');
-      cardScreen.classList.add('show');
-    }, 5000); // 3000 = 3 seconds, change if your GIF is longer
-  };
-
-  // Fallback in case onload already fired
-  if (gif.complete) {
-    setTimeout(function() {
-      introScreen.classList.add('hide');
-      cardScreen.classList.add('show');
-    }, 5000);
-  }
-
-  // Keyboard support
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') {
       const card = document.getElementById('business-card');
